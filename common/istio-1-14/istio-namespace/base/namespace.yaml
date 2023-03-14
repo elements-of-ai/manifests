@@ -5,3 +5,17 @@ metadata:
   labels:
     istio-operator-managed: Reconcile
     istio-injection: disabled
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: rb-all-sa_ns-istio-system
+  namespace: istio-system
+roleRef:
+  kind: ClusterRole
+  name: psp:vmware-system-privileged
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: Group
+  apiGroup: rbac.authorization.k8s.io
+  name: system:serviceaccounts:istio-system
