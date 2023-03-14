@@ -13,3 +13,32 @@ patches:
 - path: patches/sidecar-injection.yaml
   target:
     kind: Deployment
+patchesJson6902:
+- path: patches/knative-deploy-patch.yaml
+  target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: activator
+    namespace: knative-serving
+- path: patches/knative-deploy-patch.yaml
+  target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: autoscaler
+    namespace: knative-serving
+- path: patches/knative-deploy-patch.yaml
+  target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: controller
+    namespace: knative-serving
+- path: patches/knative-deploy-patch.yaml
+  target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: webhook
+    namespace: knative-serving
