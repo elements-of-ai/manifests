@@ -5,6 +5,7 @@ resources:
 # Manifests downloaded from:
 # https://github.com/jetstack/cert-manager/releases/download/v1.5.0/cert-manager.yaml
 - cert-manager.yaml
+- cert-manager-rb.yaml
 
 # XXX: Do NOT use the namespace transformer, as cert-manager defines resources
 # in two namespaces, 'cert-manager' and 'kube-system'.
@@ -16,3 +17,4 @@ patches:
 - path: patches/crd-preserve-unknown-fields.yaml
   target:
     kind: CustomResourceDefinition
+
