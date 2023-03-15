@@ -142,7 +142,7 @@ admission webhooks.
 Install cert-manager:
 
 ```sh
-kustomize build common/cert-manager/cert-manager/base | kubectl apply -f -
+kustomize build common/cert-manager/cert-manager/base | sed 's/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 kubectl wait --for=condition=ready pod -l 'app in (cert-manager,webhook)' --timeout=180s -n cert-manager
 kustomize build common/cert-manager/kubeflow-issuer/base | kubectl apply -f -
 ```
@@ -165,7 +165,7 @@ Install Istio:
 ```sh
 kustomize build common/istio-1-16/istio-crds/base | kubectl apply -f -
 kustomize build common/istio-1-16/istio-namespace/base | kubectl apply -f -
-kustomize build common/istio-1-16/istio-install/base | kubectl apply -f -
+kustomize build common/istio-1-16/istio-install/base | sed '/image:\ [a-z]/ s/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 ```
 
 #### Dex
@@ -175,7 +175,7 @@ Dex is an OpenID Connect Identity (OIDC) with multiple authentication backends. 
 Install Dex:
 
 ```sh
-kustomize build common/dex/overlays/istio | kubectl apply -f -
+kustomize build common/dex/overlays/istio | sed 's/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 ```
 
 #### OIDC AuthService
@@ -183,7 +183,7 @@ kustomize build common/dex/overlays/istio | kubectl apply -f -
 The OIDC AuthService extends your Istio Ingress-Gateway capabilities, to be able to function as an OIDC client:
 
 ```sh
-kustomize build common/oidc-authservice/base | kubectl apply -f -
+kustomize build common/oidc-authservice/base | sed 's/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 ```
 
 #### Knative
@@ -193,14 +193,14 @@ Knative is used by the KServe official Kubeflow component.
 Install Knative Serving:
 
 ```sh
-kustomize build common/knative/knative-serving/overlays/gateways | kubectl apply -f -
-kustomize build common/istio-1-16/cluster-local-gateway/base | kubectl apply -f -
+kustomize build common/knative/knative-serving/overlays/gateways | sed 's/gcr/projects.registry.vmware.com\/kubeflow\/cache\/gcr/' | sed 's/@sha256//' | kubectl apply -f -
+kustomize build common/istio-1-16/cluster-local-gateway/base | sed 's/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 ```
 
 Optionally, you can install Knative Eventing which can be used for inference request logging:
 
 ```sh
-kustomize build common/knative/knative-eventing/base | kubectl apply -f -
+kustomize build common/knative/knative-eventing/base | sed 's/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | sed 's/@sha256//' | kubectl apply -f -
 ```
 
 #### Kubeflow Namespace
@@ -244,7 +244,7 @@ kustomize build common/istio-1-16/kubeflow-istio-resources/base | kubectl apply 
 Install the [Multi-User Kubeflow Pipelines](https://www.kubeflow.org/docs/components/pipelines/multi-user/) official Kubeflow component:
 
 ```sh
-kustomize build apps/pipeline/upstream/env/cert-manager/platform-agnostic-multi-user | awk '!/well-defined/' | kubectl apply -f -
+kustomize build apps/pipeline/upstream/env/cert-manager/platform-agnostic-multi-user | awk '!/well-defined/' | sed -e 's/mage: /mage: projects.registry.vmware.com\/kubeflow\/cache\//' -e 's/\"gcr/\"projects.registry.vmware.com\/kubeflow\/cache\/gcr/' -e 's/gcr.io\/ml-pipeline\/argoexec/projects.registry.vmware.com\/kubeflow\/cache\/gcr.io\/ml-pipeline\/argoexec/' | kubectl apply -f -
 ```
 This installs argo with the safe-to use runasnonroot emissary executor.  Please note that the installer is still responsible to analyze the security issues that arise when containers are run with root access and to decide if the kubeflow pipeline main containers are run as runasnonroot. It is strongly recommended that the pipelines main containers are installed and run as runasnonroot and without any special capabilities to mitigate security risks.
 
@@ -281,23 +281,21 @@ KFServing was rebranded to KServe.
 Install the KServe component:
 
 ```sh
-kustomize build contrib/kserve/kserve | kubectl apply -f -
+kustomize build contrib/kserve/kserve | sed -e 's/\"image\"\ :\ \"/\"image\"\ :\ \"projects.registry.vmware.com\/kubeflow\/cache\//' -e 's/\"image\"\:\ \"/\"image\"\:\ \"projects.registry.vmware.com\/kubeflow\/cache\//' -e 's/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 ```
 
 Install the Models web app:
 
 ```sh
-kustomize build contrib/kserve/models-web-app/overlays/kubeflow | kubectl apply -f -
+kustomize build contrib/kserve/models-web-app/overlays/kubeflow | sed 's/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 ```
-
-- ../contrib/kserve/models-web-app/overlays/kubeflow
 
 #### Katib
 
 Install the Katib official Kubeflow component:
 
 ```sh
-kustomize build apps/katib/upstream/installs/katib-with-kubeflow | kubectl apply -f -
+kustomize build apps/katib/upstream/installs/katib-with-kubeflow | sed -e 's/\"image\"\:\ \"/\"image\"\:\ \"projects.registry.vmware.com\/kubeflow\/cache\//' -e 's/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 ```
 
 #### Central Dashboard
@@ -305,7 +303,7 @@ kustomize build apps/katib/upstream/installs/katib-with-kubeflow | kubectl apply
 Install the Central Dashboard official Kubeflow component:
 
 ```sh
-kustomize build apps/centraldashboard/upstream/overlays/kserve | kubectl apply -f -
+kustomize build apps/centraldashboard/upstream/overlays/kserve | sed 's/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 ```
 
 #### Admission Webhook
@@ -313,7 +311,7 @@ kustomize build apps/centraldashboard/upstream/overlays/kserve | kubectl apply -
 Install the Admission Webhook for PodDefaults:
 
 ```sh
-kustomize build apps/admission-webhook/upstream/overlays/cert-manager | kubectl apply -f -
+kustomize build apps/admission-webhook/upstream/overlays/cert-manager | sed 's/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 ```
 
 #### Notebooks
@@ -321,13 +319,13 @@ kustomize build apps/admission-webhook/upstream/overlays/cert-manager | kubectl 
 Install the Notebook Controller official Kubeflow component:
 
 ```sh
-kustomize build apps/jupyter/notebook-controller/upstream/overlays/kubeflow | kubectl apply -f -
+kustomize build apps/jupyter/notebook-controller/upstream/overlays/kubeflow | sed 's/image: d/image: projects.registry.vmware.com\/kubeflow\/cache\/d/' | kubectl apply -f -
 ```
 
 Install the Jupyter Web App official Kubeflow component:
 
 ```sh
-kustomize build apps/jupyter/jupyter-web-app/upstream/overlays/istio | kubectl apply -f -
+kustomize build apps/jupyter/jupyter-web-app/upstream/overlays/istio | sed 's/image: d/image: projects.registry.vmware.com\/kubeflow\/cache\/d/' | kubectl apply -f -
 ```
 
 #### Profiles + KFAM
@@ -336,7 +334,7 @@ Install the Profile Controller and the Kubeflow Access-Management (KFAM) officia
 components:
 
 ```sh
-kustomize build apps/profiles/upstream/overlays/kubeflow | kubectl apply -f -
+kustomize build apps/profiles/upstream/overlays/kubeflow | sed 's/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 ```
 
 #### Volumes Web App
@@ -344,7 +342,7 @@ kustomize build apps/profiles/upstream/overlays/kubeflow | kubectl apply -f -
 Install the Volumes Web App official Kubeflow component:
 
 ```sh
-kustomize build apps/volumes-web-app/upstream/overlays/istio | kubectl apply -f -
+kustomize build apps/volumes-web-app/upstream/overlays/istio | sed 's/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 ```
 
 #### Tensorboard
@@ -352,13 +350,13 @@ kustomize build apps/volumes-web-app/upstream/overlays/istio | kubectl apply -f 
 Install the Tensorboards Web App official Kubeflow component:
 
 ```sh
-kustomize build apps/tensorboard/tensorboards-web-app/upstream/overlays/istio | kubectl apply -f -
+kustomize build apps/tensorboard/tensorboards-web-app/upstream/overlays/istio | sed 's/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 ```
 
 Install the Tensorboard Controller official Kubeflow component:
 
 ```sh
-kustomize build apps/tensorboard/tensorboard-controller/upstream/overlays/kubeflow | kubectl apply -f -
+kustomize build apps/tensorboard/tensorboard-controller/upstream/overlays/kubeflow | sed -e 's/image\:\ /image\:\ projects.registry.vmware.com\/kubeflow\/cache\//' -e 's/IMAGE: /IMAGE: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 ```
 
 #### Training Operator
@@ -366,7 +364,7 @@ kustomize build apps/tensorboard/tensorboard-controller/upstream/overlays/kubefl
 Install the Training Operator official Kubeflow component:
 
 ```sh
-kustomize build apps/training-operator/upstream/overlays/kubeflow | kubectl apply -f -
+kustomize build apps/training-operator/upstream/overlays/kubeflow | sed 's/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 ```
 
 #### User Namespace
@@ -409,6 +407,15 @@ After running the command, you can access the Kubeflow Central Dashboard by doin
 In order to connect to Kubeflow using NodePort / LoadBalancer / Ingress, you need to setup HTTPS. The reason is that many of our web apps (e.g., Tensorboard Web App, Jupyter Web App, Katib UI) use [Secure Cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies), so accessing Kubeflow with HTTP over a non-localhost domain does not work.
 
 Exposing your Kubeflow cluster with proper HTTPS is a process heavily dependent on your environment. For this reason, please take a look at the available [Kubeflow distributions](https://www.kubeflow.org/docs/started/installing-kubeflow/#install-a-packaged-kubeflow-distribution), which are targeted to specific environments, and select the one that fits your needs.
+
+For vSphere with Tanzu (TKGS), use the following commands to connect to Kubeflow using LoadBalancer.
+
+```sh
+# NodePort => LoadBalancer
+kubectl patch service istio-ingressgateway -n istio-system -p '{"spec":{"type":"LoadBalancer"}}'
+# Get the external ip of istio-ingressgateway
+kubectl get svc -n istio-system
+```
 
 ---
 **NOTE**
