@@ -163,7 +163,7 @@ Knative is used by the KServe official Kubeflow component.
 Install Knative Serving:
 
 ```sh
-kustomize build common/knative/knative-serving/overlays/gateways | sed 's/gcr/projects.registry.vmware.com\/kubeflow\/cache\/gcr/' | kubectl apply -f -
+kustomize build common/knative/knative-serving/overlays/gateways | sed 's/gcr/projects.registry.vmware.com\/kubeflow\/cache\/gcr/' | sed 's/@sha256//' | kubectl apply -f -
 kustomize build common/istio-1-14/cluster-local-gateway/base | sed 's/image: /image: projects.registry.vmware.com\/kubeflow\/cache\//' | kubectl apply -f -
 ```
 
